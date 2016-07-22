@@ -1,0 +1,33 @@
+{
+  "name": "chotis",
+  "version": "1.0.0",
+  "description": "Media lib",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/andreasabilio/chotis.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/andreasabilio/chotis/issues"
+  },
+  "homepage": "https://github.com/andreasabilio/chotis#readme",
+  "dependencies": {
+    "co": "^4.6.0",
+    "css-loader": "^0.23.1",
+    "empty-object": "^1.0.0",
+    "koa": "^1.2.1",
+    "koa-router": "^5.4.0",
+    "koa-static": "^2.0.0",
+    "lodash": "^4.13.1",
+    "node-persist": "0.0.11",
+    "node-sass": "^3.8.0",
+    "sass-loader": "^4.0.0",
+    "style-loader": "^0.13.1",
+    "webpack": "^1.13.1"
+  }
+}
