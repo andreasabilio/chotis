@@ -64,45 +64,52 @@ module.exports = function(chotis){
 
 
   // Item crud
+  router.get('/', function*(next){
+    this.body = this.chotis.store.find(this.query)
+  });
   router.get('/:id', function*(next){
     this.body = this.chotis.store.getItem(this.params.id);
   });
   router.patch('/:id', function*(next){
-    var stored  = this.chotis.store.getItem(this.params.id);
-    var patched = Object.assign(stored, this.body);
-    this.chotis.store.setItem(this.params.id, patched);
+    this.chotis.store.update(this.params.id, this.body)
   });
   router.del('/:id', function*(next){
-    this.chotis.store.removeItem(this.params.id);
+    this.chotis.store.remove(this.params.id);
   });
 
 
 
-  // Import
+  // Trigger an import
   router.post('/import', function*(next){
     // TODO
-    yield importer.bind(this.chotis, this.params);
+    importer.bind(this.chotis, this.params);
+    yield next;
+  });
+
+  // Get system status
+  router.get('/status', function*(){
+    this.body = '__status__';
   });
 
 
 
-  // Tags
-  router.get('/tag', function*(next){
-    this.body = this.chotis.store.getItem('__tags');
-  });
-  router.get('/tag/:id', function*(next){
-    this.body = this.chotis.store.values().filter(item => {
-      return -1 !== item.tags.indexOf(this.params.id);
-    });
-  });
-  router.post('/tag', function*(next){
-    var tag  = this.body;
-    var tags = this.chotis.store.getItem('__tags') || [];
-    tags.push(tag);
-  });
-  router.del('/tag/:id', function*(next){
-    this.chotis.store.removeItem(this.params.id);
-  });
+  // // Tags
+  // router.get('/tag', function*(next){
+  //   this.body = this.chotis.store.getItem('__tags');
+  // });
+  // router.get('/tag/:id', function*(next){
+  //   this.body = this.chotis.store.values().filter(item => {
+  //     return -1 !== item.tags.indexOf(this.params.id);
+  //   });
+  // });
+  // router.post('/tag', function*(next){
+  //   var tag  = this.body;
+  //   var tags = this.chotis.store.getItem('__tags') || [];
+  //   tags.push(tag);
+  // });
+  // router.del('/tag/:id', function*(next){
+  //   this.chotis.store.removeItem(this.params.id);
+  // });
 
 
 
