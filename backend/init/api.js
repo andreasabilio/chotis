@@ -1,7 +1,7 @@
 
 var _          = require('lodash');
 var path       = require('path');
-var router     = require('koa-router')();
+var Router     = require('koa-router');
 var importer   = require('../util/importer');
 var status     = require('../util/status');
 
@@ -56,26 +56,38 @@ var status     = require('../util/status');
 //   return _method.replace('_', '');
 // });
 
+// Setup router
+var router = new Router({
+  prefix: '/api'
+});
+
 
 module.exports = function(chotis){
 
   // XXX
   console.log('--- running api init');
 
+  // XXX
+  router.use(function*(next){
+    // console.log('\n>>> CTX', this);
+    yield next;
+  });
 
 
   // Item crud
   router.get('/', function*(next){
-    this.body = this.chotis.store.findItem(this.query)
+    this.body = yield this.chotis.store.findItem(this.query)
   });
   router.get('/:id', function*(next){
-    this.body = this.chotis.store.getItem(this.params.id);
+    this.body = yield this.chotis.store.getItem(this.params.id);
   });
   router.patch('/:id', function*(next){
-    this.chotis.store.updateItem(this.params.id, this.body)
+    // console.log('--- request', this.request.body);
+    // console.log('--- id', this.params.id);
+    this.body = yield this.chotis.store.updateItem(this.params.id, this.request.body)
   });
   router.del('/:id', function*(next){
-    this.chotis.store.removeItem(this.params.id);
+    yield this.chotis.store.removeItem(this.params.id);
   });
 
 
@@ -93,17 +105,24 @@ module.exports = function(chotis){
     // this.body = status.call(this.chotis, this.query);
   });
 
+  // Get system settings
+  router.get('/settings', function*(){
+    this.body = yield this.chotis.store.getSettings();
+  });
+
+  // Update system settings
+  router.patch('/settings', function*(){
+    this.body = yield this.chotis.store.saveSettings(this.request.body);
+  });
+
   // Get non-tagged item queue
   router.get('/pending', function*(){
-    this.body = this.chotis.store.findPending();
+    this.body = yield this.chotis.store.findPending();
   });
 
 
-
   // Register router
-  chotis.http.use(router.routes());
-  // TODO: prefix
-  // chotis.http.use('/api', router.routes());
+  chotis.server.use(router.routes());
 
   // Return router instance
   return router;

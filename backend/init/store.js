@@ -1,36 +1,51 @@
 
-var _     = require('lodash');
-var path  = require('path');
-var store = require('node-persist');
+var _       = require('lodash');
+var path    = require('path');
+var store   = require('node-persist');
+var Promise = require('bluebird');
+
+
+// Parse store response
+var parser = function(result){
+  return JSON.parse(result[0].data);
+};
+
 
 
 // Init store
 store.initSync({
-  ttl: 3000,
+  encoding: 'utf8',
   dir: path.resolve(__dirname, '../storage')
 });
+
+// Init system settings?
+if(!store.getItem('_settings'))
+  store.setItem('_settings', {
+    _system: true,
+    folders: []
+  });
 
 
 // Store facade
 var facade = {
 
-  getItem: store.getItem,
+  getItem: function(id){
+    return store.getItem(id);
+  },
 
   addItem: function(item){
     var _item = store.getItem(item.id);
     if(!_item){
-      store.setItem(item.id, item);
-      return item;
+      return store.setItem(item.id, item).then(result => result.data);
     }else{
-      return _item;
+      return Promise.resolve(_item);
     }
   },
 
   updateItem: function(id, patch){
     var stored  = store.getItem(id);
     var patched = Object.assign(stored, patch);
-    store.setItem(id, patched);
-    return patched;
+    return store.setItem(id, patched).then(parser);
   },
 
   removeItem: function(id){
@@ -42,6 +57,9 @@ var facade = {
     var candidates    = store.values();
     var isQueryTyped  = 'type' in query;
     var isQueryTagged = 'tags' in query;
+
+    // Remove system items
+    candidates = candidates.filter(item => !('_system' in item));
 
     // Is a type specified?
     if(isQueryTyped){
@@ -57,11 +75,19 @@ var facade = {
     }
 
     // Found items
-    return candidates;
+    return Promise.resolve(candidates);
   },
 
   findPending: function(){
-    return store.values().filter(item => _.isEmpty(item.tags));
+    var pending = store.values().filter(item => _.isEmpty(item.tags));
+    return Promise.resolve(pending);
+  },
+
+  saveSettings: function(settings){
+    return this.updateItem('_settings', settings);
+  },
+  getSettings: function(){
+    return this.getItem('_settings');
   }
 };
 

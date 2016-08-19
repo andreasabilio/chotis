@@ -15,12 +15,12 @@ var Chotis = co.wrap(function*(){
   var chotis = Object.assign({}, {config: config});
 
   // Build the chotis instance
-  chotis.store = init.store(chotis);
-  chotis.http  = init.http(chotis);
-  chotis.api   = init.api(chotis);
+  chotis.store  = init.store(chotis);
+  chotis.server = init.server(chotis);
+  chotis.api    = init.api(chotis);
 
   // Start http server
-  chotis.http.listen(3000);
+  chotis.server.listen(3000);
 
   // Return running instance
   return chotis;
@@ -32,7 +32,7 @@ var Chotis = co.wrap(function*(){
 Chotis().then(function(chotis){
 
   // XXX
-  console.log('=== chotis:', chotis);
+  // console.log('=== chotis:', chotis);
 
   // XXX
   var importer = require('./util/importer');
@@ -42,19 +42,19 @@ Chotis().then(function(chotis){
   };
 
   // Run importer
-  // importer.call(chotis, _config).then(function(result){
-  //   console.log('\n=== Importer result:\n');
-  //   // console.log(result);
-  //
-  //   // var someImage = chotis.store.getItem(result[3].id);
-  //   var someImage = chotis.store.findPending();
-  //   console.log('+++ someImage', someImage);
-  //
-  // }).catch(function(e){
-  //   console.log('\n=== Importer ERROR:\n');
-  //   console.log(e);
-  //   console.log(e.stack);
-  // });
+  importer.call(chotis, _config).then(function(result){
+    console.log('\n=== Importer result:\n');
+    // console.log(result);
+
+    // var someImage = chotis.store.getItem(result[3].id);
+    // var someImage = chotis.store.findPending();
+    // console.log('+++ someImage', someImage);
+
+  }).catch(function(e){
+    console.log('\n=== Importer ERROR:\n');
+    console.log(e);
+    console.log(e.stack);
+  });
 
 }).catch(function(e){
   console.log(e);
