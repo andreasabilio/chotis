@@ -15,6 +15,7 @@ module.exports = function(chotis){
 
   // Initialize the koa server
   var server = koa();
+  require('koa-qs')(server, 'strict');
 
   // Register json body middleware
   server.use(bodyParser());

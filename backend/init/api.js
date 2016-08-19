@@ -82,8 +82,6 @@ module.exports = function(chotis){
     this.body = yield this.chotis.store.getItem(this.params.id);
   });
   router.patch('/:id', function*(next){
-    // console.log('--- request', this.request.body);
-    // console.log('--- id', this.params.id);
     this.body = yield this.chotis.store.updateItem(this.params.id, this.request.body)
   });
   router.del('/:id', function*(next){
