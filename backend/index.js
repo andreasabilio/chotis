@@ -34,6 +34,28 @@ Chotis().then(function(chotis){
   // XXX
   console.log('=== chotis:', chotis);
 
+  // XXX
+  var importer = require('./util/importer');
+  var path     = require('path');
+  var _config = {
+    dirPath: path.resolve(__dirname, '../images')
+  };
+
+  // Run importer
+  // importer.call(chotis, _config).then(function(result){
+  //   console.log('\n=== Importer result:\n');
+  //   // console.log(result);
+  //
+  //   // var someImage = chotis.store.getItem(result[3].id);
+  //   var someImage = chotis.store.findPending();
+  //   console.log('+++ someImage', someImage);
+  //
+  // }).catch(function(e){
+  //   console.log('\n=== Importer ERROR:\n');
+  //   console.log(e);
+  //   console.log(e.stack);
+  // });
+
 }).catch(function(e){
   console.log(e);
   console.log(e.stack);

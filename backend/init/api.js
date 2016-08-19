@@ -1,8 +1,9 @@
 
 var _          = require('lodash');
 var path       = require('path');
-var router     = require('koa-router');
+var router     = require('koa-router')();
 var importer   = require('../util/importer');
+var status     = require('../util/status');
 
 //var endpoints = {
 //  image: [
@@ -59,22 +60,22 @@ var importer   = require('../util/importer');
 module.exports = function(chotis){
 
   // XXX
-  console.log('--- running api init', chotis);
+  console.log('--- running api init');
 
 
 
   // Item crud
   router.get('/', function*(next){
-    this.body = this.chotis.store.find(this.query)
+    this.body = this.chotis.store.findItem(this.query)
   });
   router.get('/:id', function*(next){
     this.body = this.chotis.store.getItem(this.params.id);
   });
   router.patch('/:id', function*(next){
-    this.chotis.store.update(this.params.id, this.body)
+    this.chotis.store.updateItem(this.params.id, this.body)
   });
   router.del('/:id', function*(next){
-    this.chotis.store.remove(this.params.id);
+    this.chotis.store.removeItem(this.params.id);
   });
 
 
@@ -82,40 +83,29 @@ module.exports = function(chotis){
   // Trigger an import
   router.post('/import', function*(next){
     // TODO
-    importer.bind(this.chotis, this.params);
+    importer.call(this.chotis, this.body);
     yield next;
   });
 
   // Get system status
   router.get('/status', function*(){
-    this.body = '__status__';
+    // TODO
+    // this.body = status.call(this.chotis, this.query);
+  });
+
+  // Get non-tagged item queue
+  router.get('/pending', function*(){
+    this.body = this.chotis.store.findPending();
   });
 
 
 
-  // // Tags
-  // router.get('/tag', function*(next){
-  //   this.body = this.chotis.store.getItem('__tags');
-  // });
-  // router.get('/tag/:id', function*(next){
-  //   this.body = this.chotis.store.values().filter(item => {
-  //     return -1 !== item.tags.indexOf(this.params.id);
-  //   });
-  // });
-  // router.post('/tag', function*(next){
-  //   var tag  = this.body;
-  //   var tags = this.chotis.store.getItem('__tags') || [];
-  //   tags.push(tag);
-  // });
-  // router.del('/tag/:id', function*(next){
-  //   this.chotis.store.removeItem(this.params.id);
-  // });
-
-
-
   // Register router
-  chotis.http.use('/api', router.routes());
+  chotis.http.use(router.routes());
+  // TODO: prefix
+  // chotis.http.use('/api', router.routes());
 
-  return true;
+  // Return router instance
+  return router;
 
 };

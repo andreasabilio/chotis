@@ -14,76 +14,54 @@ store.initSync({
 // Store facade
 var facade = {
 
-  addNew: function(item){
-    if(!store.getItem(item.id))
+  getItem: store.getItem,
+
+  addItem: function(item){
+    var _item = store.getItem(item.id);
+    if(!_item){
       store.setItem(item.id, item);
+      return item;
+    }else{
+      return _item;
+    }
   },
 
-  update: function(id, patch){
+  updateItem: function(id, patch){
     var stored  = store.getItem(id);
     var patched = Object.assign(stored, patch);
     store.setItem(id, patched);
     return patched;
   },
 
-  remove: function(id){
-
+  removeItem: function(id){
+    // TODO
   },
 
-  find: function(query){
+  findItem: function(query){
 
-    var found         = [];
-    var hasQueryId    = 'id' in query;
+    var candidates    = store.values();
     var isQueryTyped  = 'type' in query;
     var isQueryTagged = 'tags' in query;
 
-
-    // XXX
-    // Como si fuera un patch
-    // var example = {
-    //   id: 'O47Y5CNO4E87YNW8UGHCNW8O74GNSCO85',
-    //   name: null,
-    //   path: '/some/path',
-    //   format: 'png',
-    //   type: 'image',
-    //   tags: ['landscape', 'river', 'tree', 'sunny'],
-    //   _tags: ['sunny', 'river'],
-    //   date: '987465924'
-    // };
-
-
-    // By id?
-    if(hasQueryId){
-      found.push(store.getItem(query.id));
-    }
-
-    // By type?
+    // Is a type specified?
     if(isQueryTyped){
-      found.push(store.values().filter(item => query.type === item.type));
+      candidates = candidates.filter(item => query.type === item.type);
     }
 
     // By tags?
     if(isQueryTagged){
-
-      // Get matching items
-      var byTags = store.values().filter((item) => {
-
-        var matches       = _.intersection(query.tags, item.tags || []);
-        var isTagMatched  = 0 < matches.length;
-        var isTypeMatched = query.type === item.type;
-
-        if(isQueryTyped)
-          return isTagMatched && isTypeMatched;
-        else
-          return isTagMatched;
+      candidates = candidates.filter((item) => {
+        var matches = _.intersection(query.tags, item.tags || []);
+        return 0 < matches.length;
       });
-
-      // Store matched items
-      found.push(byTags);
     }
 
     // Found items
-    return found;
+    return candidates;
+  },
+
+  findPending: function(){
+    return store.values().filter(item => _.isEmpty(item.tags));
   }
 };
 
