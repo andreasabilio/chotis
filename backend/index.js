@@ -44,7 +44,7 @@ Chotis().then(function(chotis){
   // Run importer
   importer.call(chotis, _config).then(function(result){
     console.log('\n=== Importer result:\n');
-    // console.log(result);
+    console.log(result);
 
     // var someImage = chotis.store.getItem(result[3].id);
     // var someImage = chotis.store.findPending();

@@ -1,6 +1,7 @@
+"use strict";
 
-var path     = require('path');
-var basePath = path.resolve(__dirname, '');
+const path     = require('path');
+const basePath = path.resolve(__dirname, '');
 
 module.exports = {
     paths: {

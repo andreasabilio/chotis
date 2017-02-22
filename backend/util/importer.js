@@ -1,18 +1,19 @@
+"use strict";
 
-var _           = require('lodash');
-var fs          = require('fs');
-var co          = require('co');
-var md5File     = require('md5-file/promise');
-var isImage     = require('is-image');
-var isVideo     = require('is-video');
-var koaStatic   = require('koa-static');
-var isDirectory = require('is-directory');
-var Promise     = require('bluebird');
-var readDir     = Promise.promisify(fs.readdir);
-var isDir       = Promise.promisify(isDirectory);
+const _           = require('lodash');
+const fs          = require('fs');
+const co          = require('co');
+const md5File     = require('md5-file/promise');
+const isImage     = require('is-image');
+const isVideo     = require('is-video');
+const koaStatic   = require('koa-static');
+const isDirectory = require('is-directory');
+const Promise     = require('bluebird');
+const readDir     = Promise.promisify(fs.readdir);
+// const isDir       = Promise.promisify(isDirectory);
 
 
-var itemFactory = function(type, item){
+const itemFactory = function (type, item) {
 
     // Build item relative url
     var url = this._relBase + item.replace(this.dirPath, '');
@@ -21,25 +22,25 @@ var itemFactory = function(type, item){
     // console.log('THIS', this);
 
     return {
-        id:   md5File.sync(item),
+        id: md5File.sync(item),
         // path: item,
-        url:  url,
+        url: url,
         type: type,
         tags: []
     };
 };
 
 
-var storeItem = function(item){
+const storeItem = function (item) {
     return this.store.addItem(item);
 };
 
-var getLastFolder = function(dirPath){
+const getLastFolder = function (dirPath) {
     return dirPath.split('/').pop();
 };
 
 
-var importer = co.wrap(function*(config){
+const importer = co.wrap(function*(config) {
 
     // Set base relative url
     // var _relBase     = config.dirPath.split('/');
@@ -56,13 +57,13 @@ var importer = co.wrap(function*(config){
     var videos  = candidates.filter(isVideo).map(itemFactory.bind(config, 'video'));
 
     // Import recursively?
-    if(config.recursive){
+    if (config.recursive) {
         folders.forEach((folder) => {
-            var _config = Object.assign(
-                    {},
-                    config,
-                    {dirPath: folder}
-                );
+            let _config = Object.assign(
+                {},
+                config,
+                {dirPath: folder}
+            );
             importer.call(this, _config);
         });
     }
