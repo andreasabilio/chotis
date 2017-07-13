@@ -28,6 +28,7 @@ const walker = function(out, filePath){
 const addMedia = function(filePath, store){
     const hash = md5File.sync(filePath);
     const data = {
+        id: hash,
         path: filePath,
         name: path.basename(filePath, path.extname(filePath)),
         tags: []
