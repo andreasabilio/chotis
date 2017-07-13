@@ -41,7 +41,6 @@ jspm_packages
 
 build
 
-backend/storage
 /frontend/semantic/tasks/
 /frontend/semantic/gulpfile.js
 /frontend/semantic/src/
