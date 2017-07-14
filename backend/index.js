@@ -1,22 +1,26 @@
 "use strict";
 
-const path    = require('path');
-const reqAll  = require('require-all');
-const express = require('express');
+const path       = require('path');
+const reqAll     = require('require-all');
+const express    = require('express');
+const bodyParser = require('body-parser');
 
 const app       = express();
-const storage   = reqAll(path.join(__dirname, 'storage'));
+const models    = reqAll(path.join(__dirname, 'models'));
 const routes    = reqAll(path.join(__dirname, 'routes'));
 const endpoints = Object.keys(routes);
 
-// XXX
-// const importer = require('./importer');
-// importer(path.resolve(__dirname, '../media'), storage);
+// Update models
+const update = require('./update');
+update(path.resolve(__dirname, '../media'), models);
 
-// Register routes
+// Init json body parser
+app.use(bodyParser.json());
+
+// Register routes && inject models
 endpoints.forEach(end => {
-    const store = (end in storage)? storage[end] : null;
-    app.use('/' + end, routes[end](store));
+    const model = (end in models)? models[end] : null;
+    app.use('/api/' + end, routes[end](model));
 });
 
 app.listen(4444, function(){

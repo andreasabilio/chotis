@@ -1,31 +1,36 @@
 "use strict";
 
-const fse       = require('fs-extra');
-const deepMerge = require('deepmerge');
-const express   = require('express');
-const router    = express.Router();
+const fse     = require('fs-extra');
+const express = require('express');
+const router  = express.Router();
 
-module.exports = function(store){
+module.exports = function(model){
 
     router.get('/', (req, res) => {
-        res.json(store.values());
+        res.json(model.values());
     });
 
     router.get('/:id', (req, res) => {
-        res.json(store.getItemSync(req.params.id));
+        res.json(model.getItemSync(req.params.id));
+    });
+
+    router.put('/:id', (req, res) => {
+        model.setItemSync(req.params.id, req.body);
+        res.json(req.body);
     });
 
     router.patch('/:id', (req, res) => {
-        const item = store.getItemSync(req.params.id);
-        const updated = deepMerge(item, req.body);
-        store.setItemSync(req.params.id, updated);
+        const item = model.getItemSync(req.params.id);
+        const updated = Object.assign(item, req.body);
+        model.setItemSync(req.params.id, updated);
         res.json(updated);
     });
 
     router.delete('/:id', (req, res) => {
-        const item = store.getItemSync(req.params.id);
-        store.removeItemSync(req.params.id);
-        fse.removeSync(item.path);
+        const item = model.getItemSync(req.params.id);
+        model.removeItemSync(req.params.id);
+        // TODO
+        // fse.removeSync(item.path);
         res.sendStatus(200);
     });
 

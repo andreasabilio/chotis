@@ -26,10 +26,17 @@ const walker = function(out, filePath){
 };
 
 const addMedia = function(filePath, store){
-    const hash = md5File.sync(filePath);
+    const hash   = md5File.sync(filePath);
+    const exists = store.getItemSync(hash);
+
+    if(exists) return;
+
+    // const relative = path.relative(__filename, );
+
     const data = {
         id: hash,
         path: filePath,
+        // uri: filePath.replace(relative, ''),
         name: path.basename(filePath, path.extname(filePath)),
         tags: []
     };
