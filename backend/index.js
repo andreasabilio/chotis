@@ -18,9 +18,9 @@ update(path.resolve(__dirname, '../media'), models);
 app.use(bodyParser.json());
 
 // Register routes && inject models
-endpoints.forEach(end => {
-    const model = (end in models)? models[end] : null;
-    app.use('/api/' + end, routes[end](model));
+endpoints.forEach(endpoint => {
+    const model = (endpoint in models)? models[endpoint] : null;
+    app.use('/api/' + endpoint, routes[endpoint](model));
 });
 
 app.listen(4444, function(){
